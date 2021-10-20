@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Background.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="hh_m1a.h" />
@@ -147,6 +148,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Background.cpp" />
     <ClCompile Include="Drawable.cpp" />
     <ClCompile Include="hh_m1a.cpp" />
     <ClCompile Include="Player.cpp" />

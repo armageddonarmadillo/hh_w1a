@@ -10,6 +10,7 @@
 #define GRAVITY 2
 #define PSPEED 10
 #define ESPEED (PSPEED / 2)
+extern int mpos; //map position
 // Windows Header Files
 #include <windows.h>
 // C RunTime Header Files

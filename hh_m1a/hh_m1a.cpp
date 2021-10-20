@@ -5,6 +5,7 @@
 #include "hh_m1a.h"
 #include "Drawable.h"
 #include "Player.h"
+#include "Background.h"
 
 #define MAX_LOADSTRING 100
 
@@ -15,18 +16,24 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 // GAME VARIABLES
 Player* mc = new Player(100, 100);
-Drawable* bg = new Drawable("Background.jpg", 0, 0, 700, 550);
-Drawable* ground = new Drawable("Ground.bmp", 0, GROUND, 774, 128);
+Background* bg = new Background("Background3.jpg", 0, 0, 5118, 800, 0.5);
+Background* ground = new Background("Ground.bmp", 0, GROUND, 774, 128, 1);
 
 // GAME LISTS
 
 // CONTROL VARIABLES
+HDC buffer_context;
+int mpos = 0;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+// Custom method forward declarations
+void	setup_buffer();
+void	draw_buffer(HWND hWnd);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -109,6 +116,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 
+	setup_buffer();
 	SetTimer(hWnd, 1, 17, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
@@ -215,10 +223,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code that uses hdc here...
-		HDC context = GetDC(hWnd);
-		bg->draw(context);
-		ground->draw(context);
-		mc->draw(context);
+		bg->draw(buffer_context);
+		ground->draw(buffer_context);
+		mc->draw(buffer_context);
+		draw_buffer(hWnd);
 		EndPaint(hWnd, &ps);
 	}
 	break;
@@ -249,4 +257,18 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	return (INT_PTR)FALSE;
+}
+
+void setup_buffer() {
+	HDC temp = GetDC(0);									//context of nothing
+	HBITMAP bmp = CreateCompatibleBitmap(temp, 800, 600);	//create an image out of temp context
+	buffer_context = CreateCompatibleDC(temp);				//initialize buffer context using temp context
+	SelectObject(buffer_context, bmp);						//bind image to buffer context
+	ReleaseDC(0, temp);										//destroy object to release memory
+}
+
+void draw_buffer(HWND hWnd) {
+	HDC temp = GetDC(hWnd);
+	TransparentBlt(temp, 0, 0, 700, 550, buffer_context, 0, 0, 700, 550, RGB(255, 174, 201));
+	DeleteDC(temp);
 }

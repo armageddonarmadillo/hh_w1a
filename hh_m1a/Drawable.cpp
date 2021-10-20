@@ -16,5 +16,5 @@ void Drawable::draw(HDC c) {
 	image.SetTransparentColor(RGB(255, 174, 201));
 
 	//Draws to the screen
-	image.TransparentBlt(c, x, y, w, h, 0, 0, w, h);
+	image.TransparentBlt(c, x - mpos, y, w, h, 0, 0, w, h);
 }
