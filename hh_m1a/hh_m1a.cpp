@@ -6,6 +6,7 @@
 #include "Drawable.h"
 #include "Player.h"
 #include "Background.h"
+#include "Box.h"
 
 #define MAX_LOADSTRING 100
 
@@ -20,6 +21,8 @@ Background* bg = new Background("Background3.jpg", 0, 0, 5118, 800, 0.5);
 Background* ground = new Background("Ground.bmp", 0, GROUND, 774, 128, 1);
 
 // GAME LISTS
+list<Box*> boxes;
+
 
 // CONTROL VARIABLES
 HDC buffer_context;
@@ -118,6 +121,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	setup_buffer();
 	SetTimer(hWnd, 1, 17, NULL);
+	//big boxes
+	for (int i = 0; i < 5; i++) boxes.add(new Box("Crate.bmp", 200 + i * 64, GROUND - 64, 64, 64));
+	//small boxes
+	for (int i = 0; i < 5; i++) boxes.add(new Box("SmallCrate.bmp", 600 + i * 32, GROUND - 32 - i * 32, 32, 32));
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -170,6 +177,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case 0x57: // W
 			mc->yspeed = -PSPEED * 2;
 			break;
+		case VK_SPACE:
+			mc->shooting = true;
+			break;
 		}
 	}
 	break;
@@ -187,6 +197,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case 0x57: // W
 			// WILL IMPLEMENT LATER
+			break;
+		case VK_SPACE:
+			mc->shooting = false;
 			break;
 		}
 	}
@@ -225,7 +238,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: Add any drawing code that uses hdc here...
 		bg->draw(buffer_context);
 		ground->draw(buffer_context);
+		for (Box* b : boxes) b->draw(buffer_context);
 		mc->draw(buffer_context);
+		mc->draw_bullets(buffer_context);
 		draw_buffer(hWnd);
 		EndPaint(hWnd, &ps);
 	}

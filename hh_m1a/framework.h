@@ -22,3 +22,6 @@ extern int mpos; //map position
 #include <atlimage.h>
 #include <list>
 #include <string>
+#define list std::list
+#define string std::string
+#define add push_back
