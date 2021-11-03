@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Background.h"
 #include "Box.h"
+#include "Platform.h"
 
 #define MAX_LOADSTRING 100
 
@@ -22,6 +23,7 @@ Background* ground = new Background("Ground.bmp", 0, GROUND, 774, 128, 1);
 
 // GAME LISTS
 list<Box*> boxes;
+list<Platform*> platforms;
 
 
 // CONTROL VARIABLES
@@ -125,7 +127,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	for (int i = 0; i < 5; i++) boxes.add(new Box("Crate.bmp", 200 + i * 64, GROUND - 64, 64, 64));
 	//small boxes
 	for (int i = 0; i < 5; i++) boxes.add(new Box("SmallCrate.bmp", 600 + i * 32, GROUND - 32 - i * 32, 32, 32));
-
+	//platforms
+	platforms.add(new Platform(400, 200, 3));
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
 	return TRUE;
@@ -175,7 +178,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			// WILL IMPLEMENT LATER
 			break;
 		case 0x57: // W
-			mc->yspeed = -PSPEED * 2;
+			if (mc->grounded || mc->landed) mc->yspeed = -PSPEED * 2;
 			break;
 		case VK_SPACE:
 			mc->shooting = true;
@@ -226,7 +229,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_TIMER:
 	{
-		mc->update();
+		mc->update(boxes);
+		for (Platform* p : platforms) p->update();
 		//ADD ABOVE THIS LINE
 		PostMessage(hWnd, WM_PAINT, 0, 0);
 	}
@@ -239,6 +243,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		bg->draw(buffer_context);
 		ground->draw(buffer_context);
 		for (Box* b : boxes) b->draw(buffer_context);
+		for (Platform* p : platforms) p->draw_boxes(buffer_context);
 		mc->draw(buffer_context);
 		mc->draw_bullets(buffer_context);
 		draw_buffer(hWnd);

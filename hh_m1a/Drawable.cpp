@@ -9,6 +9,8 @@ Drawable::Drawable(CString p, int x, int y, int w, int h) {
 	yspeed = 0;
 	srcx = 0;
 	srcy = 0;
+	px = x;
+	py = y;
 	hw = w;
 	hh = h;
 	sc = 0;
@@ -30,4 +32,9 @@ void Drawable::draw(HDC c) {
 void Drawable::animate() {
 	cc = cc >= ec ? loop ? sc : ec : ++cc;
 	srcx = cc * w;
+}
+
+bool Drawable::collides(Drawable* d) {
+	return (x < d->x + d->hw && x + hw > d->x &&
+		y < d->y + d->hh && y + hh > d->y);
 }
