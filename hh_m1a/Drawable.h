@@ -6,7 +6,7 @@ class Drawable
 public:
 	int x, y, w, h, px, py;
 	int srcx, srcy, hw, hh, sc, cc, ec;
-	int xspeed, yspeed;
+	int xspeed, yspeed, durability;
 	bool loop;
 	CImage image;
 	CString path;

@@ -143,12 +143,16 @@
     <ClInclude Include="Box.h" />
     <ClInclude Include="Bullet.h" />
     <ClInclude Include="Combat.h" />
+    <ClInclude Include="Crab.h" />
     <ClInclude Include="Drawable.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Grid.h" />
     <ClInclude Include="hh_m1a.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Spawner.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -156,10 +160,13 @@
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Bullet.cpp" />
     <ClCompile Include="Combat.cpp" />
+    <ClCompile Include="Crab.cpp" />
     <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="hh_m1a.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Spawner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hh_m1a.rc" />

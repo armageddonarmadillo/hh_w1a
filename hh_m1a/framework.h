@@ -10,7 +10,12 @@
 #define GRAVITY 2
 #define PSPEED 10
 #define ESPEED (PSPEED / 2)
-extern int mpos; //map position
+#define gscale 1
+#define gcellw 32 * gscale
+#define gcellh 32 * gscale
+#define gsw 700
+#define gsh 550
+extern int mpos, plx; //map position, player x position
 // Windows Header Files
 #include <windows.h>
 // C RunTime Header Files
@@ -22,6 +27,15 @@ extern int mpos; //map position
 #include <atlimage.h>
 #include <list>
 #include <string>
+#include <iostream>
+#include <sstream>
+#include <fstream>
 #define list std::list
 #define string std::string
 #define add push_back
+
+#define lineout( s ) {						\
+	std::wostringstream os;					\
+	os << s << "\n";						\
+	OutputDebugStringW(os.str().c_str());   \
+}

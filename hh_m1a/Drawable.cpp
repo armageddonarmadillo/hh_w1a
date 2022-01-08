@@ -16,6 +16,7 @@ Drawable::Drawable(CString p, int x, int y, int w, int h) {
 	sc = 0;
 	cc = 0;
 	ec = 0;
+	durability = 25;
 	loop = false;
 
 	image.Load("./assets/" + p);
