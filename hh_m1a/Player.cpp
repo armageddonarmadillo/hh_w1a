@@ -1,7 +1,8 @@
 #include "Player.h"
 
 Player::Player(int x, int y) : Combat("ViktorTesla.bmp", x, y, 54, 42) {
-
+	durability = 25;
+	php = durability;
 }
 
 void Player::move() {
@@ -18,6 +19,8 @@ void Player::move() {
 }
 
 void Player::update(list<Box*> boxes, list<Platform*> platforms) {
+	php = durability;
+	if (y > 600) durability = 0;
 	move();
 	fire();
 	platform(boxes, platforms);

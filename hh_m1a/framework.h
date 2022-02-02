@@ -6,7 +6,7 @@
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-#define GROUND 450
+#define GROUND 800
 #define GRAVITY 2
 #define PSPEED 10
 #define ESPEED (PSPEED / 2)
@@ -15,7 +15,7 @@
 #define gcellh 32 * gscale
 #define gsw 700
 #define gsh 550
-extern int mpos, plx; //map position, player x position
+extern int mpos, plx, php; //map position, player x position
 // Windows Header Files
 #include <windows.h>
 // C RunTime Header Files

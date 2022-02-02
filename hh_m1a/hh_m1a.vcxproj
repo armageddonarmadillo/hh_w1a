@@ -142,31 +142,39 @@
     <ClInclude Include="Background.h" />
     <ClInclude Include="Box.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Combat.h" />
     <ClInclude Include="Crab.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="Health.h" />
     <ClInclude Include="hh_m1a.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Spawner.h" />
+    <ClInclude Include="Start.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Box.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Combat.cpp" />
     <ClCompile Include="Crab.cpp" />
     <ClCompile Include="Drawable.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Health.cpp" />
     <ClCompile Include="hh_m1a.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Spawner.cpp" />
+    <ClCompile Include="Start.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hh_m1a.rc" />

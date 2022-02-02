@@ -1,17 +1,9 @@
 // hh_m1a.cpp : Defines the entry point for the application.
-//
-
 #include "framework.h"
 #include "hh_m1a.h"
-#include "Drawable.h"
-#include "Player.h"
-#include "Background.h"
-#include "Box.h"
-#include "Platform.h"
-#include "Enemy.h"
-#include "Crab.h"
-#include "Spawner.h"
+#include "Game.h"
 #include "Grid.h"
+#include "Start.h"
 
 #define MAX_LOADSTRING 100
 
@@ -20,23 +12,15 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
-// GAME VARIABLES
-Grid* grid = new Grid(6400);
-Player* mc = new Player(100, 100);
-Background* bg = new Background("Background3.jpg", 0, 0, 5118, 800, 0.5);
-Background* ground = new Background("Ground.bmp", 0, GROUND, 774, 128, 1);
-
-// GAME LISTS
-list<Box*> boxes;
-list<Platform*> platforms;
-list<Enemy*> enemies;
-list<Spawner*> spawners;
-
-
 // CONTROL VARIABLES
 HDC buffer_context;
-int mpos = 0;
-int plx = 0;
+int mpos = 0, plx = 0, php = 0;
+bool started = false, paused = false, lost = false;
+
+// GAME VARIABLES
+Start* start = new Start();
+Game* game = new Game();
+Grid* grid = new Grid(6400);
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -47,10 +31,6 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 // Custom method forward declarations
 void				setup_buffer();
 void				draw_buffer(HWND hWnd);
-list<list<string>>	load_level(CString lvl);
-void				build_level(list<list<string>> lvl);
-void				start_level(CString lvl);
-
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -133,7 +113,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		return FALSE;
 	}
 
-	start_level("level1.txt");
 	setup_buffer();
 	SetTimer(hWnd, 1, 17, NULL);
 	ShowWindow(hWnd, nCmdShow);
@@ -174,72 +153,46 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_KEYDOWN:
 	{
-		switch (wParam) {
-		case 0x41: // A
-			mc->xspeed = -PSPEED;
-			break;
-		case 0x44: // D
-			mc->xspeed = PSPEED;
-			break;
-		case 0x53: // S
-			// WILL IMPLEMENT LATER
-			break;
-		case 0x57: // W
-			if (mc->grounded || mc->landed) mc->yspeed = -PSPEED * 2;
-			break;
-		case VK_SPACE:
-			mc->shooting = true;
-			break;
-		}
+		game->inputs(wParam, false);
 	}
 	break;
 	case WM_KEYUP:
 	{
-		switch (wParam) {
-		case 0x41: // A
-			mc->xspeed = 0;
-			break;
-		case 0x44: // D
-			mc->xspeed = 0;
-			break;
-		case 0x53: // S
-			// WILL IMPLEMENT LATER
-			break;
-		case 0x57: // W
-			// WILL IMPLEMENT LATER
-			break;
-		case VK_SPACE:
-			mc->shooting = false;
-			break;
-		}
+		game->inputs(wParam, true);
 	}
 	break;
 	case WM_MOUSEMOVE:
 	{
 		POINT p;
-		if (GetCursorPos(&p))
-			if (ScreenToClient(hWnd, &p)) {
-				//drawable->x = p.x;
-				//drawable->y = p.y;
-			}
+		if (GetCursorPos(&p)) if (!ScreenToClient(hWnd, &p)) break;
+		//DO MOUSEMOVE LOGIC BELOW THIS LINE
+		start->input(p.x, p.y, false);
+
 	}
 	break;
-	case WM_RBUTTONUP:
+	case WM_RBUTTONDOWN:
 	{
 
+	}
+	break;
+	case WM_LBUTTONDOWN:
+	{
+		POINT p;
+		if (GetCursorPos(&p)) if (!ScreenToClient(hWnd, &p)) break;
+		start->input(p.x, p.y, true);
+		//grid->fill(grid->search(p.x + mpos, p.y));
 	}
 	break;
 	case WM_LBUTTONUP:
 	{
-
+		POINT p;
+		if (GetCursorPos(&p)) if (!ScreenToClient(hWnd, &p)) break;
+		if (!started) started = start->input(p.x, p.y, false);
 	}
 	break;
 	case WM_TIMER:
 	{
-		mc->update(boxes, platforms);
-		for (Platform* p : platforms) p->update();
-		for (Enemy* e : enemies) e->update(mc, boxes, platforms);
-		for (Spawner* s : spawners) s->update(mc, boxes, platforms);
+		if (started) game->update();
 		//ADD ABOVE THIS LINE
 		PostMessage(hWnd, WM_PAINT, 0, 0);
 	}
@@ -249,16 +202,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(hWnd, &ps);
 		// TODO: Add any drawing code that uses hdc here...
-		bg->draw(buffer_context);
-		ground->draw(buffer_context);
-		for (Box* b : boxes) b->draw(buffer_context);
-		for (Platform* p : platforms) p->draw_boxes(buffer_context);
-		for (Enemy* e : enemies) e->draw(buffer_context);
-		for (Enemy* e : enemies) e->draw_bullets(buffer_context);
-		for (Spawner* s : spawners) s->draw_crabs(buffer_context);
-		mc->draw(buffer_context);
-		mc->draw_bullets(buffer_context);
-		grid->draw(buffer_context);
+		if (!started) start->render(buffer_context);
+		else game->render(buffer_context);
 		draw_buffer(hWnd);
 		EndPaint(hWnd, &ps);
 	}
@@ -304,53 +249,4 @@ void draw_buffer(HWND hWnd) {
 	HDC temp = GetDC(hWnd);
 	TransparentBlt(temp, 0, 0, 700, 550, buffer_context, 0, 0, 700, 550, RGB(255, 174, 201));
 	DeleteDC(temp);
-}
-
-list<list<string>> load_level(CString lvl) {
-	std::ifstream file("./levels/" + lvl);
-	string str;
-	list<string> lines;
-	list<list<string>> level;
-
-	while (std::getline(file, str)) lines.add(str);
-
-	string de = "|"; //setting delimiter to pipe character NOT L or I
-	list<string> elements;
-	size_t p = 0;
-	for (string s : lines) {
-		while ((p = s.find(de)) != string::npos) {
-			elements.add(s.substr(0, p));
-			s.erase(0, p + de.length());
-		}
-		level.add(elements);
-		elements.clear();
-	}
-	return level;
-}
-
-void build_level(list<list<string>> lvl) {
-	int r = 0, c = 0; //row in lvl, column in lvl
-	for (list<string> line : lvl) {
-		for (string s : line) {
-			if (s == "[b]") boxes.add(new Box("SmallCrate.bmp", c * gcellw, r * gcellh, gcellw, gcellh));
-			if (s == "[W]") boxes.add(new Box("woodblock.png", c * gcellw, r * gcellh, gcellw, gcellh));
-			if (s == "[I]") boxes.add(new Box("iceblock.png", c * gcellw, r * gcellh, gcellw, gcellh));
-			if (s == "[T]") boxes.add(new Box("toxicblock.png", c * gcellw, r * gcellh, gcellw, gcellh));
-			if (s == "[L]") boxes.add(new Box("lavablock.png", c * gcellw, r * gcellh, gcellw, gcellh));
-			if (s == "[B]") boxes.add(new Box("Crate.bmp", c * gcellw, r * gcellh, gcellw * 2, gcellh * 2));
-			if (s == "[S]") spawners.add(new Spawner(c * gcellw, r * gcellh, 2, 150));
-			if (s == "[K]") enemies.add(new Crab(c * gcellw, r * gcellh));
-			if (s == "[P]") {
-				mc = new Player(c * gcellw, r * gcellh);
-				mpos = mc->x - 100;
-			}
-
-			/*END COLS*/ if (c++ == line.size() - 1) c = 0;
-		}
-		/*END ROWS*/ if (r++ == lvl.size() - 1) r = 0;
-	}
-}
-
-void start_level(CString lvl) {
-	build_level(load_level(lvl));
 }
